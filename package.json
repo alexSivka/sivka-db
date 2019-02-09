@@ -1,0 +1,30 @@
+{
+  "name": "sivka-db",
+  "version": "1.0.0",
+  "description": "Fast & simple db querybulder, clone of laravel querybuilder",
+  "license": "MIT",
+  "main": "./src/db.js",
+  "scripts": {},
+  "dependencies": {
+    "mysql": "^2.15.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alexSivka/sivka-db.git"
+  },
+  "homepage": "https://github.com/alexSivka/sivka-db.git",
+  "keywords": [
+    "node",
+    "db",
+    "database",
+    "querybuilder",
+    "query",
+    "builder",
+    "mysql",
+    "laravel"
+  ],
+  "engines": {
+    "node": ">=8.6.0"
+  }
+}
