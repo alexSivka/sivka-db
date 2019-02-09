@@ -39,6 +39,11 @@ const db = require('sivka-db')(config);
 })();
 ```
 
+Full documentation read here
+
+- [english](./docs/en/syntax.md)
+- [russian](./docs/ru/syntax.md)
+
 ## Built With
 
 * [mysqljs/mysql](https://github.com/mysqljs/mysql)

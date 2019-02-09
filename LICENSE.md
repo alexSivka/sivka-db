@@ -1,6 +1,6 @@
 # The MIT License (MIT)
 
-**Copyright © 2013-present Rod Vagg and [Contributors](CONTRIBUTORS.md).**
+**Copyright © 2019 alex Sivka**
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
