@@ -14,6 +14,10 @@ Documentation is available in two languages
 ```
 npm i sivka-db
 ```
+or
+```
+npm i alexSivka/sivka-db
+```
 
 ### Simple example
 
