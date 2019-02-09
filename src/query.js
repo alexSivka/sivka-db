@@ -625,7 +625,7 @@ module.exports = class Query {
      */
     async delete(){
         let command = 'DELETE FROM ' + this.data.tableName;
-        let res = this.sql(this.getSql(command));
+        let res = await this.sql(this.getSql(command));
         return typeof res != 'string' ? res.changedRows : res;
     }
 
