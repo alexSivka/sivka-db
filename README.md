@@ -14,19 +14,16 @@ Documentation is available in two languages
 ```
 npm i sivka-db
 ```
-or
-```
-npm i alexSivka/sivka-db
-```
 
 ### Simple example
 
 ```js
 const config = {
     host: 'localhost',
-    username: 'root',
+    user: 'root',
     password: 'root',
-    database: 'test'
+    database: 'test',
+    port: 3306 // optional, default is 3306
 };
 
 const db = require('sivka-db')(config);
@@ -42,6 +39,7 @@ const db = require('sivka-db')(config);
 
 })();
 ```
+
 
 Full documentation read here
 

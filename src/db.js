@@ -40,9 +40,9 @@ class db {
      * @returns {Promise} Promise
      */
 
-    reConnect(config = null){
+    async reConnect(config = null){
         this.destroyed = false;
-        return this.connect(config);
+        return await this.connect(config);
     }
 
     /**
@@ -58,23 +58,14 @@ class db {
 
             if(this.connection && this.connection.state !== 'disconnected' && !config) return resolve(this.connection);
             
-            this.connection = this.mySql.createConnection({
-                host: this.config.host,
-                user: this.config.username,
-                password: this.config.password,
-                database: this.config.database
-            });
-            this.connection.on('error', (err) => {
-                if(err.code === 'PROTOCOL_CONNECTION_LOST') this.connect();
-                else{
-                    this.log(err);
-                    reject(err);
-                }
+            this.connection = this.mySql.createConnection(this.config);
+            this.connection.on('error', async (err) => {
+                if(err.code === 'PROTOCOL_CONNECTION_LOST') await this.connect();
+                else reject(err);
             });
 
             this.connection.connect( (err) => {
                 if(err){
-                    this.log(err);
                     reject(err);
                 }else{
                     resolve(this.connection);
@@ -138,10 +129,6 @@ class db {
             if(this.connection) this.connection.end( () => { resolve() });
             else resolve();
         });
-    }
-
-    log(){
-        if(this.config.debug) console.log(arguments);
     }
 
 }

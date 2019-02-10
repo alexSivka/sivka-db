@@ -3,10 +3,12 @@ In fact this document is rewrited copy of
 
 ## Connection
 
+[more connection options](./connection.md#connection-options)
+
 ```js
 const config = {
     host: 'localhost',
-    username: 'root',
+    user: 'root',
     password: 'root',
     database: 'test'
 };
@@ -14,7 +16,9 @@ const config = {
 const db = require('sivka-db')(config);
 ```
 
-**[More about connection](./connection.md)**
+[More about connection](./connection.md)
+
+### Table of contents
 
 - [Start query](#start-query)
 - [Retrieving Results](#retrieving-results)
@@ -65,20 +69,20 @@ db.table('users')
 ```js
 let users = await db.table('users').get();
 ```
-The **get** method returns an array containing the results where each result is  key-value pair object.
+The `get` method returns an array containing the results where each result is  key-value pair object.
 
-If you just need to retrieve a single row from the database table, you may use the **first** method. This method will return a key-value pair object
+If you just need to retrieve a single row from the database table, you may use the `first` method. This method will return a key-value pair object
 
 ```js
 let user = await db.table('users').where('name', 'John').first();
 ```
 
-If you don't even need an entire row, you may extract a single value from a record using the **value** method. This method will return the value of the column directly:
+If you don't even need an entire row, you may extract a single value from a record using the `value` method. This method will return the value of the column directly:
 ```js
 let email = await db.table('users').where('name', 'John').value('email');
 ```
 
-If you would like to retrieve a array containing the values of a single column, you may use the **pluck** method. In this example, we'll retrieve a array of role titles:
+If you would like to retrieve a array containing the values of a single column, you may use the `pluck` method. In this example, we'll retrieve a array of role titles:
 
 ```js
 let titles = await db.table('roles').pluck('title');
@@ -92,14 +96,14 @@ let roles = await db.table('roles').pluck('title', 'name');
 
 ## Aggregates
 
-The query builder also provides a variety of aggregate methods such as **count**, **max**, **min**, **avg**, and **sum**. You may call any of these methods after constructing your query:
+The query builder also provides a variety of aggregate methods such as `count`, `max`, `min`, `avg`, and `sum`. You may call any of these methods after constructing your query:
 
 ```js
 let johns = await db.table('users').where('name', 'John').count();
 let date = await db.table('users').avg('birthday');
 ```
 
-Instead of using the count method to determine if any records exist that match your query's constraints, you may use the **exists** and **doesntExist** methods:
+Instead of using the `count` method to determine if any records exist that match your query's constraints, you may use the `exists` and `doesntExist` methods:
 
 ```js
 let state = await db.table('orders').where('finalized', 1).exists();
@@ -108,27 +112,27 @@ let state = await db.table('orders').where('finalized', 1).doesntExist();
 
 ## Selects
 
-Using the select method, you can specify a custom **select** clause for the query:
+Using the select method, you can specify a custom `select` clause for the query:
 
 ```js
 let users = await db.table('users').select('name', 'email as user_email').get();
 // or array
 let users = await db.table('users').select(['name', 'email']).get();
 ```
-If you wish to add a column to its existing select clause, you may use the **addSelect** method:
+If you wish to add a column to its existing select clause, you may use the `addSelect` method:
 
 ```js
 let query = await db.table('users').select('email');
 query.addSelect('id', 'name');
 ```
-The **distinct** method allows you to force the query to return distinct results:
+The `distinct` method allows you to force the query to return distinct results:
 
 ```js
 let email = await db.table('users').where('name', 'John').distinct().get();
 ```
 ## Raw Expressions
 
-To create a raw expression, you may use the **db.raw** method:
+To create a raw expression, you may use the `db.raw` method:
 
 ```js
 users = await db.table('users').select(db.raw('count(*) as user_count, status')).get();
@@ -138,10 +142,12 @@ prices = await db.table('users').select(db.raw('price * ? as newPrice', [1.5])).
 ### Raw Methods
 
 #### selectRaw
-The selectRaw method can be used in place of select(db.raw(...)). This method accepts an optional array of bindings as its second argument:
+The `selectRaw` method can be used in place of `select(db.raw(...))`. This method accepts an optional array of bindings as its second argument:
 
 ```js
-orders = await db.table('orders').selectRaw('price * ? as price_with_tax', [1.0825]).get();
+orders = await db.table('orders')
+                .selectRaw('price * ? as price_with_tax', [1.0825])
+                .get();
 ```
 
 #### whereRaw / orWhereRaw
@@ -149,12 +155,14 @@ orders = await db.table('orders').selectRaw('price * ? as price_with_tax', [1.08
 These methods accept an optional array of bindings as their second argument:
 
 ```js
-orders = await db.table('orders').whereRaw('price > IF(state = "TX", ?, 100)', [200]).get();
+orders = await db.table('orders')
+                .whereRaw('price > IF(state = "TX", ?, 100)', [200])
+                .get();
 ```
 
 #### havingRaw / orHavingRaw
 
-The **havingRaw** and **orHavingRaw** methods may be used to set a raw string as the value of the **having** clause. These methods accept an optional array of bindings as their second argument:
+The `havingRaw` and `orHavingRaw` methods may be used to set a raw string as the value of the `having` clause. These methods accept an optional array of bindings as their second argument:
 
 ```js
 orders = await db.table('orders').select('department', db.raw('SUM(price) as total_sales'))
@@ -162,14 +170,14 @@ orders = await db.table('orders').select('department', db.raw('SUM(price) as tot
 ```
 
 #### orderByRaw
-The **orderByRaw** method may be used to set a raw string as the value of the order by clause:
+The `orderByRaw` method may be used to set a raw string as the value of the order by clause:
 ```js
 let orders = await db.table('orders').orderByRaw('updated_at - created_at DESC').get();
 ```
 
 ## Joins
 
-To perform a basic "inner join", you may use the **join** method on a query builder instance. The first argument passed to the join method is the name of the table you need to join to, while the remaining arguments specify the column constraints for the join
+To perform a basic "inner join", you may use the `join` method on a query builder instance. The first argument passed to the join method is the name of the table you need to join to, while the remaining arguments specify the column constraints for the join
 
 ```js
 users = await db.table('users')
@@ -179,7 +187,7 @@ users = await db.table('users')
             .get();
 ```
 
-Available join methods: **leftJoin**, **rightJoin**, **crossJoin**
+Available join methods: `leftJoin`, `rightJoin`, `crossJoin`
 
 ## Unions
 
@@ -248,7 +256,7 @@ let users = await db.table('users').whereDate('date', '2019-01-01').get();
 ```
 
 #### whereColumn
-The **whereColumn** method may be used to verify that two columns are equal:
+The `whereColumn` method may be used to verify that two columns are equal:
 ```js
 let users = await db.table('users').whereColumn('first_name', 'last_name').get();
 
@@ -283,7 +291,7 @@ let users = await db.table('users').orderBy('id').orderBy('name', 'desc').get();
 ```
 
 #### latest / oldest
-The **latest** and **oldest** methods allow you to easily order results by date. By default, result will be ordered by the **created_at** column. Or, you may pass the column name that you wish to sort by:
+The `latest` and `oldest` methods allow you to easily order results by date. By default, result will be ordered by the `created_at` column. Or, you may pass the column name that you wish to sort by:
 ```js
 let oldUser = await db.table('users').oldest().first();
 let youngUser = await db.table('users').latest('birthday').first();
@@ -291,14 +299,14 @@ let youngUser = await db.table('users').latest('birthday').first();
 
 #### inRandomOrder
 
-The **inRandomOrder** method may be used to sort the query results randomly.
+The `inRandomOrder` method may be used to sort the query results randomly.
 ```js
 let randomUser = await db.table('users').inRandomOrder().first();
 ```
 
 #### groupBy / having / orHaving
 
-The **groupBy** and **having** methods may be used to group the query results. The **having** method's signature is similar to that of the **where** method:
+The `groupBy` and `having` methods may be used to group the query results. The `having` method's signature is similar to that of the `where` method:
 
 ```js
 let users = await db.table('users')
@@ -329,7 +337,7 @@ let users = await db.table('users')
                     })
                     .get();
 ```
-The **when** method only executes the given Closure when the first parameter is not false
+The `when` method only executes the given Closure when the first parameter is not false
 
 You may pass another Closure as the third parameter to the when method. This Closure will execute if the first parameter evaluates as false.
 
@@ -359,7 +367,7 @@ let changedRows = await db.table('users').where('id', 1)
                         .update({email: 'john@example.com', votes: 0});
 ```
 
-**insert** and **update** has second argument. If this argument set to **true**, 
+`insert` and `update` has optional second argument. If this argument set to `true`, 
 only existing columns will be updated / inserted. Example:
 
 ```js
@@ -399,7 +407,7 @@ await db.table('users').drop();
 
 ### toSql
 
-The toSql method must be before final method in query chain. If toSql method is in query, returned result will be generated sql statement
+The `toSql` method must be before final method in query chain. If `toSql` method is in query, returned result will be generated sql statement
 
 ```js
 let res = await db.table('users').where('name', 'Valera').toSql().get();
@@ -411,7 +419,7 @@ let res = await db.table('users').insert({condition: 'gut'}).toSql().insert();
 
 ### getColumnNames
 
-getColumnNames returns an array of column names for provided table
+`getColumnNames` returns an array of column names for provided table
 
 ```js
 // table users has three columns: id | name | condition
@@ -421,7 +429,7 @@ let names = await db.table('users').getColumnNames();
 
 ### find
 
-**find** method returns first matched record with provided **id**
+`find` method returns first matched record with provided `id`
 
 ```js
 let names = await db.table('users').find(1);
