@@ -606,7 +606,7 @@ module.exports = class Query {
     async insert(values, onlyExisting = false){
         let sql = 'INSERT INTO ' + this.data.tableName + ' SET ' + await this.getAsSql(values, onlyExisting);
         let res = await this.sql(sql);
-        return res.insertId;
+        return typeof res == 'string' ? res : res.insertId;
     }
 
     /**
@@ -617,7 +617,7 @@ module.exports = class Query {
     async update(values, onlyExisting = false){
         let command = 'UPDATE ' + this.data.tableName + ' SET ' + await this.getAsSql(values, onlyExisting);
         let res = await this.sql(this.getSql(command));
-        return res.changedRows;
+        return typeof res == 'string' ? res : res.changedRows;
     }
 
     /**
@@ -721,9 +721,14 @@ module.exports = class Query {
      */
     wrapField(field){
         if(typeof field == 'function') return field();
-        return field.toLowerCase().split(/[\s]+/).map( word => {
-            if(word == 'as' || word == '*') return word;
+
+        return field.split(/[\s]+/).map( word => {
+
+            if(word.match(/^[0-9\.]+$/) || !word.match(/^[A-Za-z0-9_\.-]+$/)) return word; // number or operator
+            if(word.toLowerCase() == 'as' || word == '*') return word;
+
             return word.split('.').map( v => '`' + v + '`' ).join('.');
+
         }).join(' ');
     }
 
@@ -750,7 +755,7 @@ module.exports = class Query {
     }
 
     /**
-     * trucates table
+     * truncates table
      */
     truncate(){
         return this.sql('TRUNCATE TABLE ' + this.data.tableName);
