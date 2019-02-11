@@ -1,5 +1,5 @@
 
-let Query = require('./Query.js');
+let Query = require('./query.js');
 
 
 class db {

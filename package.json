@@ -1,6 +1,6 @@
 {
   "name": "sivka-db",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Fast & simple nodejs db query bulder, clone of laravel query builder",
   "license": "MIT",
   "main": "./src/db.js",
