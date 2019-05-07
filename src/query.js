@@ -189,7 +189,8 @@ module.exports = class Query {
      * @returns this
      */
     whereIn(column, values){
-        return this.where(this.wrapField(column) + " IN(" + values.join(',') + ")");
+        values = values.map( value => this.db.format('?', [value]) ).join(',');
+        return this.where(this.wrapField(column) + " IN(" + values + ")");
     }
 
     /**
@@ -198,6 +199,7 @@ module.exports = class Query {
      * @returns this
      */
     whereNotIn(column, values){
+        values = values.map( value => this.db.format('?', [value]) ).join(',');
         return this.where(this.wrapField(column) + " NOT IN(" + values.join(', ') + ")");
     }
 
@@ -472,7 +474,7 @@ module.exports = class Query {
     }
 
     count(){
-        return this.aggregate( ['COUNT(*) AS num'] );
+        return this.aggregate( this.data.fields = ['COUNT(*) AS num'] );
     }
 
     max(column){
