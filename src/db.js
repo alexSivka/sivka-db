@@ -1,7 +1,4 @@
 
-let Query = require('./query.js');
-
-
 class db {
 
     constructor(config = {}){
@@ -16,7 +13,7 @@ class db {
      * @returns {object} Query
      */
     table(tableName){
-        return new Query(this, tableName);
+        return new this.driver(this, tableName);
     }
 
     /**
@@ -107,6 +104,9 @@ class db {
      * @returns void
      */
     setConfig(config){
+        if(!config.driver) config.driver = 'mysql';
+        this.driverName = config.driver + 'Driver';
+        this.driver = require( './' + this.driverName);
         this.config = config;
     }
 

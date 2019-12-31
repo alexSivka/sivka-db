@@ -3,7 +3,7 @@
  * @todo whereExists, JSON Where Clauses, unionAll
  */
 
-module.exports = class Query {
+module.exports = class mysqlDriver {
 
     constructor(db, tableName = ''){
         this.db = db;
@@ -30,7 +30,7 @@ module.exports = class Query {
 
     /**
      * inner method
-     * @param {string} sql 
+     * @param {string} sql
      */
     sql(sql){
         if(this.asSql){
@@ -132,7 +132,7 @@ module.exports = class Query {
      * @returns this
      */
     where(column, arg1 = false, arg2 = false, dataName = 'where'){
-
+        if(arguments.hasOwnProperty('1') && arguments['1'] === undefined) throw `undefined value in where clause: (${column}, undefined)`;
         if(typeof column == 'function') return this.whereGroup(column, dataName);
 
         if(Array.isArray(column)){
@@ -140,7 +140,7 @@ module.exports = class Query {
         }else{
             this.data[dataName].push(this.whereString(column, arg1, arg2));
         }
-        
+
         return this;
     }
 
@@ -228,7 +228,7 @@ module.exports = class Query {
     whereNull(column){
         return this.where(this.wrapField(column) + ' IS NULL');
     }
-    
+
     /**
      * @param {string} column - column name
      * @returns this
@@ -393,7 +393,7 @@ module.exports = class Query {
     }
 
     /**
-     * @param {string} sql 
+     * @param {string} sql
      * @param {array} values - values for placeholders
      * @returns this
      */
@@ -427,7 +427,7 @@ module.exports = class Query {
 
     /**
      * @param {number} num1
-     * @param {*} [num2] 
+     * @param {*} [num2]
      * @returns this
      */
     limit(num1, num2 = 0){
@@ -463,7 +463,7 @@ module.exports = class Query {
     /**
      * @returns array
      */
-    get(){     
+    get(){
         return this.sql( this.unionToSql(this.getSql( this.selectCommand() )) );
     }
 
@@ -478,19 +478,19 @@ module.exports = class Query {
     }
 
     max(column){
-        return this.aggregate( this.data.fields = ['MAX('+ this.wrapField(column) +') AS num'] );      
+        return this.aggregate( this.data.fields = ['MAX('+ this.wrapField(column) +') AS num'] );
     }
 
     min(column){
-        return this.aggregate( this.data.fields = ['MIN('+ this.wrapField(column) +') AS num'] );      
+        return this.aggregate( this.data.fields = ['MIN('+ this.wrapField(column) +') AS num'] );
     }
 
     avg(column){
-        return this.aggregate( this.data.fields = ['AVG('+ this.wrapField(column) +') AS num'] );      
+        return this.aggregate( this.data.fields = ['AVG('+ this.wrapField(column) +') AS num'] );
     }
 
     sum(column){
-        return this.aggregate( this.data.fields = ['SUM('+ this.wrapField(column) +') AS num'] );      
+        return this.aggregate( this.data.fields = ['SUM('+ this.wrapField(column) +') AS num'] );
     }
 
     /**
@@ -520,7 +520,7 @@ module.exports = class Query {
     /**
      * @param {string} columnValue - column name for select
      * @param {string} [columnKey] - column name to use as keys
-     * @returns array|object|null 
+     * @returns array|object|null
      */
     async pluck(columnValue, columnKey = false){
         this.data.fields = columnKey ? [this.wrapField(columnValue), this.wrapField(columnKey)] : [this.wrapField(columnValue)];
@@ -552,7 +552,7 @@ module.exports = class Query {
         this.data.limit = [1];
         return new Promise( async (resolve) => {
             let res = await this.get();
-            if(typeof res == 'string') resolve(res); 
+            if(typeof res == 'string') resolve(res);
             else resolve( res && res.length ? res[0] : null );
         });
     }
@@ -577,8 +577,8 @@ module.exports = class Query {
     }
 
     /**
-     * @param {string} sql - sql string 
-     * @param {array} [values] - values for placeholders 
+     * @param {string} sql - sql string
+     * @param {array} [values] - values for placeholders
      */
     selectRaw(sql, values = []){
         return this.self( this.data.fields.push( this.db.format(sql, values) ) );
@@ -601,7 +601,7 @@ module.exports = class Query {
     }
 
     /**
-     * @param {object} values 
+     * @param {object} values
      * @param {boolean} onlyExisting - if set to true only existing columns will be inserted
      * @return number - id of inserted
      */
@@ -612,7 +612,7 @@ module.exports = class Query {
     }
 
     /**
-     * @param {object} values 
+     * @param {object} values
      * @param {boolean} onlyExisting - if set to true only existing columns will be updated
      * @return number - number of changed rows
      */
@@ -654,7 +654,7 @@ module.exports = class Query {
 
     /**
      * inner method
-     * @param {string} command 
+     * @param {string} command
      * @return string
      */
     getSql(command = ''){
@@ -687,7 +687,7 @@ module.exports = class Query {
 
     /**
      * inner method
-     * @param {string} firstSql 
+     * @param {string} firstSql
      * @returns string
      */
     unionToSql(firstSql){
@@ -718,7 +718,7 @@ module.exports = class Query {
 
     /**
      * inner method. wraps string with ``
-     * @param {string} field 
+     * @param {string} field
      * @returns string
      */
     wrapField(field){
@@ -736,7 +736,7 @@ module.exports = class Query {
 
     /**
      * inner method
-     * @param {object} data 
+     * @param {object} data
      */
     async getAsSql(data, onlyExisting = false){
         let query = [], columnName, val, dataObj = Object.assign({}, data);
@@ -747,10 +747,10 @@ module.exports = class Query {
         for(columnName in dataObj){
             val = dataObj[columnName].toString().indexOf('(') == -1 ? this.escape(dataObj[columnName]) : dataObj[columnName];
             query.push( this.wrapField(columnName) + ' = ' + val);
-        } 
+        }
         return query.join(', ');
     }
-    
+
     when(value, func1, func2 = false){
         if(value) return this.self( func1(this, value) );
         return func2 ? this.self( func2(this, value) ) : this;
